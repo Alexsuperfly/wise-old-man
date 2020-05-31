@@ -67,13 +67,13 @@ function AchievementOrb({ achievement }) {
 
 function ProgressBar({ progress, equalSizes }) {
   const className = classNames('achievement-progress', {
-    '-full': equalSizes || (progress > 0 && progress < 1)
+    '-full': equalSizes || (progress.percent > 0 && progress.percent < 1)
   });
 
-  const progressInt = Math.floor(progress * 100);
+  const progressInt = Math.floor(progress.percent * 100);
 
   return (
-    <abbr className={className} title={`${progressInt} %`}>
+    <abbr className={className} title={`${progress.current} ${progressInt}%`}>
       <div className="achievement-progress__fill" style={{ width: `${progressInt}%` }} />
     </abbr>
   );
@@ -85,20 +85,20 @@ function PlayerAchievements({ groupedAchievements, metricType }) {
   const nearest = groups
     .map(g => g.achievements)
     .flat()
-    .filter(a => a.progress < 1 && a.measure !== 'levels')
-    .sort((a, b) => b.progress - a.progress)
+    .filter(a => a.progress.percent < 1 && a.measure !== 'levels')
+    .sort((a, b) => b.progress.percent - a.progress.percent)
     .slice(0, 10);
 
   const nearestItems = nearest.map(i => ({
     icon: getMetricIcon(i.metric),
     title: i.type,
-    subtitle: `${Math.round(i.progress * 10000) / 100}% completed`
+    subtitle: `${Math.round(i.progress.percent * 10000) / 100}% completed`
   }));
 
   const equalSizes = achievements =>
     achievements.length === 1 ||
-    achievements.filter(g => g.progress === 1).length === achievements.length ||
-    achievements.filter(g => g.progress === 0).length === achievements.length;
+    achievements.filter(g => g.progress.percent === 1).length === achievements.length ||
+    achievements.filter(g => g.progress.percent === 0).length === achievements.length;
 
   return (
     <>

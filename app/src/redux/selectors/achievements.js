@@ -58,12 +58,12 @@ function processGroup(player, group) {
   const { latestSnapshot } = player;
 
   if (group.metric === 'combat') {
-    const progress = player.combatLevel / 126;
+    const progress = { current: player.combatLevel, end: 126, percent: player.combatLevel / 126 }
     return { ...group, achievements: [...group.achievements.map(a => ({ ...a, progress }))] };
   }
 
   if (group.metric === 'overall' && group.measure === 'levels') {
-    const progress = getTotalLevel(latestSnapshot) / 2277;
+    const progress = { current: getTotalLevel(latestSnapshot), end: 2277, percent: getTotalLevel(latestSnapshot) / 2277 };
     return { ...group, achievements: [...group.achievements.map(a => ({ ...a, progress }))] };
   }
 
@@ -72,14 +72,14 @@ function processGroup(player, group) {
 
     const processedAchievements = group.achievements.map((achievement, i) => {
       if (currentValue >= achievement.threshold) {
-        return { ...achievement, progress: 1 };
+        return { ...achievement, progress: {current: currentValue, end: achievement.threshold, percent: 1} };
       }
 
       const prevStart = i === 0 ? 0 : group.achievements[i - 1].threshold;
-      const currentProgress = Math.max(
+      const currentProgress = {current: currentValue, end: achievement.threshold, percent: Math.max(
         0,
         (currentValue - prevStart) / (achievement.threshold - prevStart)
-      );
+      ) }
 
       return { ...achievement, progress: currentProgress };
     });
